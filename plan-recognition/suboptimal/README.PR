@@ -1,0 +1,5 @@
+* The suboptimal (and heuristic) solvers presented at our IJCAI-09 paper were built on top of the C^3 planner presented by Ramirez, Lipovetzky & Geffner to the IPC-2008 competition. Keyder & Geffner set-additive heuristic was integrated into C^3. 
+* The sources for Metric FF are also included because, first, C^3 uses it's PDDL to Propositional STRIPS compilation facilities. It's a bit messy, I know.
+* You'll need to build the program for compiling observations away (see folder 'obs-compiler') and put the binary inside this folder.
+* The solver is invoked through the helper script 'subopt_PR.py', which invokes first, 'plan2pr', to reduce the input PR task into a planning problem, and then 'subopt_PR', the actual solver.
+* When 'subopt_PR.py' is invoked with the '-s' parameter, the heuristic approximate algorithm from (IJCAI-09) is used. 

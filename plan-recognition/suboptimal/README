@@ -1,0 +1,38 @@
+C^3: a planner for the Sequential, Satisficing track of IPC-6
+=============================================================
+M. Ramirez, N. Lipovetzky, H. Geffner
+Barcelona, 30th May 2008
+=============================================================
+
+CONTENTS:
+
+1. Some notes on building & PDDL support
+2. Acknowledgements
+
+=============================================================
+1. SOME NOTES ON BUILDING & PDDL SUPPORT
+=============================================================
+
+C^3 sources have been written in C++ compliant with g++ 4.1.3. The 
+planner just won't compile under g++ 3.x or g++ 4.0 due to some
+changes made to the usage of the 'typename' keyword and handling
+of inline friend functions (at the very least). We earnestly recommend
+to upgrade your system with g++ 4.1.3 rather than modifying C^3 sources.
+
+C^3 uses Metric-FF distribution (with some slight tweaking) for 
+parsing and grounding the problem specification in PDDL. Therefore
+C^3 supports all of PDDL features *bar conditional effects*. C^3
+behavior on problem specifications featuring CE will be pretty random.
+
+The modified sources for Metric-FF can be found in folder
+	./mod-metric-ff
+The PDDL parser can be built, out-of-the box, with bison 2.3 and
+flex 2.5.33.
+
+==============================================================
+2. ACKNOWLEDGEMENTS
+==============================================================
+
+We would like to thank Jörg Hoffmann for making available Metric-FF
+sources, and Malte Helmert for making available the Python script
+benchmark.py.
