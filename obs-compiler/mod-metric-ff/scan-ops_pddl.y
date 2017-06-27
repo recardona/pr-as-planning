@@ -8,16 +8,16 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  *********************************************************************/
 
 
@@ -29,7 +29,7 @@
 #define YYMAXDEPTH 1000000
 
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
 #include "ff.h"
 #include "memory.h"
 #include "parse.h"
@@ -49,7 +49,7 @@
 #define PRECONDDEF_UNCORRECT       9
 #define TYPEDEF_EXPECTED          10
 #define CONSTLIST_EXPECTED        11
-#define PREDDEF_EXPECTED          12 
+#define PREDDEF_EXPECTED          12
 #define NAME_EXPECTED             13
 #define VARIABLE_EXPECTED         14
 #define ACTIONFUNCTOR_EXPECTED    15
@@ -64,7 +64,7 @@
 #define NAME_STR "name\0"
 #define VARIABLE_STR "variable\0"
 #define STANDARD_TYPE "OBJECT\0"
- 
+
 
 static char *serrmsg[] = {
   "domain definition expected",
@@ -86,14 +86,10 @@ static char *serrmsg[] = {
   "atomic formula expected",
   "effect definition expected",
   "negated atomic formula expected",
-  "requirement %s not supported by this FF version",  
+  "requirement %s not supported by this FF version",
   "action definition is not correct",
   NULL
 };
-
-
-/* void opserr( int errno, char *par ); */
-
 
 static int sact_err;
 static char *sact_err_par = NULL;
@@ -106,18 +102,18 @@ int supported( char *str )
 {
 
   int i;
-  char * sup[] = { ":STRIPS", ":NEGATION", ":EQUALITY",":TYPING", 
-		   ":CONDITIONAL-EFFECTS", ":NEGATIVE-PRECONDITIONS", ":DISJUNCTIVE-PRECONDITIONS", 
-		   ":EXISTENTIAL-PRECONDITIONS", ":UNIVERSAL-PRECONDITIONS", 
+  char * sup[] = { ":STRIPS", ":NEGATION", ":EQUALITY",":TYPING",
+		   ":CONDITIONAL-EFFECTS", ":NEGATIVE-PRECONDITIONS", ":DISJUNCTIVE-PRECONDITIONS",
+		   ":EXISTENTIAL-PRECONDITIONS", ":UNIVERSAL-PRECONDITIONS",
 		   ":QUANTIFIED-PRECONDITIONS", ":ADL", ":FLUENTS", ":ACTION-COSTS",
-		   NULL };     
+		   NULL };
 
   for (i=0; NULL != sup[i]; i++) {
     if ( SAME == strcmp(sup[i], str) ) {
       return TRUE;
     }
   }
-  
+
   return FALSE;
 
 }
@@ -201,20 +197,20 @@ int supported( char *str )
 
 /**********************************************************************/
 file:
-{ 
-  opserr( DOMDEF_EXPECTED, NULL ); 
+{
+
 }
-domain_definition 
+domain_definition
 ;
 /* can be extended to support 'addenda' and similar stuff */
 
 
 /**********************************************************************/
-domain_definition : 
-OPEN_PAREN  DEFINE_TOK  domain_name       
-{ 
+domain_definition :
+OPEN_PAREN  DEFINE_TOK  domain_name
+{
 }
-optional_domain_defs 
+optional_domain_defs
 {
   if ( gcmd_line.display_info >= 1 ) {
     printf("\ndomain '%s' defined\n", gdomain_name);
@@ -225,8 +221,8 @@ optional_domain_defs
 
 /**********************************************************************/
 domain_name :
-OPEN_PAREN  DOMAIN_TOK  NAME  CLOSE_PAREN 
-{ 
+OPEN_PAREN  DOMAIN_TOK  NAME  CLOSE_PAREN
+{
   gdomain_name = new_Token( strlen($3)+1 );
   strcpy( gdomain_name, $3);
 }
@@ -253,11 +249,11 @@ action_def  optional_domain_defs
 
 /**********************************************************************/
 predicates_def :
-OPEN_PAREN PREDICATES_TOK  predicates_list 
+OPEN_PAREN PREDICATES_TOK  predicates_list
 {
 }
 CLOSE_PAREN
-{ 
+{
 }
 ;
 /**********************************************************************/
@@ -298,7 +294,7 @@ OPEN_PAREN FUNCTIONS_TOK  functions_list
 {
 }
 CLOSE_PAREN
-{ 
+{
 }
 ;
 /**********************************************************************/
@@ -313,7 +309,7 @@ OPEN_PAREN  NAME typed_list_variable  CLOSE_PAREN MINUS_TOK NAME
   TypedListList *tll;
 
   if(strcmp($6, "number")) {
-    opserr(NOT_SUPPORTED, "non-number fluent");
+
   }
 
   if ( gparse_functions ) {
@@ -343,7 +339,7 @@ OPEN_PAREN  NAME typed_list_variable  CLOSE_PAREN
   TypedListList *tll;
 
   /* assume untyped functions are "number" */
-  
+
   if ( gparse_functions ) {
     tll = gparse_functions;
     while ( tll->next ) {
@@ -368,14 +364,13 @@ functions_list
 
 /**********************************************************************/
 require_def:
-OPEN_PAREN  REQUIREMENTS_TOK 
-{ 
-  opserr( REQUIREM_EXPECTED, NULL ); 
+OPEN_PAREN  REQUIREMENTS_TOK
+{
+
 }
 NAME
-{ 
+{
   if ( !supported( $4 ) ) {
-    opserr( NOT_SUPPORTED, $4 );
     yyerror();
   }
 }
@@ -388,9 +383,8 @@ require_key_star:
 /* empty */
 |
 NAME
-{ 
+{
   if ( !supported( $1 ) ) {
-    opserr( NOT_SUPPORTED, $1 );
     yyerror();
   }
 }
@@ -401,21 +395,21 @@ require_key_star
 /**********************************************************************/
 types_def:
 OPEN_PAREN  TYPES_TOK
-{ 
-  opserr( TYPEDEF_EXPECTED, NULL ); 
+{
+
 }
 typed_list_name  CLOSE_PAREN
 {
   gparse_types = $4;
 }
-; 
+;
 
 
 /**********************************************************************/
 constants_def:
 OPEN_PAREN  CONSTANTS_TOK
-{ 
-  opserr( CONSTLIST_EXPECTED, NULL ); 
+{
+
 }
 typed_list_name  CLOSE_PAREN
 {
@@ -428,18 +422,18 @@ typed_list_name  CLOSE_PAREN
  * actions and their optional definitions
  **********************************************************************/
 action_def:
-OPEN_PAREN  ACTION_TOK  
-{ 
-  opserr( ACTION, NULL ); 
-}  
+OPEN_PAREN  ACTION_TOK
+{
+
+}
 NAME
-{ 
+{
   scur_op = new_PlOperator( $4 );
 }
 param_def  action_def_body  CLOSE_PAREN
 {
   scur_op->next = gloaded_ops;
-  gloaded_ops = scur_op; 
+  gloaded_ops = scur_op;
 }
 ;
 
@@ -447,8 +441,8 @@ param_def  action_def_body  CLOSE_PAREN
 /**********************************************************************/
 param_def:
 /* empty */
-{ 
-  scur_op->params = NULL; 
+{
+  scur_op->params = NULL;
 }
 |
 PARAMETERS_TOK  OPEN_PAREN  typed_list_variable  CLOSE_PAREN
@@ -456,7 +450,7 @@ PARAMETERS_TOK  OPEN_PAREN  typed_list_variable  CLOSE_PAREN
   TypedList *tl;
   scur_op->parse_params = $3;
   for (tl = scur_op->parse_params; tl; tl = tl->next) {
-    /* to be able to distinguish params from :VARS 
+    /* to be able to distinguish params from :VARS
      */
     scur_op->number_of_real_params++;
   }
@@ -472,11 +466,11 @@ VARS_TOK  OPEN_PAREN  typed_list_variable  CLOSE_PAREN  action_def_body
 {
   TypedList *tl = NULL;
 
-  /* add vars as parameters 
+  /* add vars as parameters
    */
   if ( scur_op->parse_params ) {
     for( tl = scur_op->parse_params; tl->next; tl = tl->next ) {
-      /* empty, get to the end of list 
+      /* empty, get to the end of list
        */
     }
     tl->next = $3;
@@ -487,14 +481,14 @@ VARS_TOK  OPEN_PAREN  typed_list_variable  CLOSE_PAREN  action_def_body
 }
 |
 PRECONDITION_TOK  adl_goal_description
-{ 
-  scur_op->preconds = $2; 
+{
+  scur_op->preconds = $2;
 }
 action_def_body
 |
 EFFECT_TOK  adl_effect
-{ 
-  scur_op->effects = $2; 
+{
+  scur_op->effects = $2;
 }
 action_def_body
 ;
@@ -503,7 +497,7 @@ action_def_body
 
 /**********************************************************************
  * Goal description providing full ADL.
- * RETURNS a tree with the connectives in the nodes and the atomic 
+ * RETURNS a tree with the connectives in the nodes and the atomic
  * predicates in the leafs.
  **********************************************************************/
 adl_goal_description:
@@ -548,7 +542,7 @@ OPEN_PAREN GE_TOK f_exp f_exp CLOSE_PAREN
 }
 |
 literal_term
-{ 
+{
   if ( sis_negated ) {
     $$ = new_PlNode(NOT);
     $$->sons = new_PlNode(ATOM);
@@ -561,25 +555,25 @@ literal_term
 }
 |
 OPEN_PAREN  AND_TOK  adl_goal_description_star  CLOSE_PAREN
-{ 
+{
   $$ = new_PlNode(AND);
   $$->sons = $3;
 }
 |
 OPEN_PAREN  OR_TOK  adl_goal_description_star  CLOSE_PAREN
-{ 
+{
   $$ = new_PlNode(OR);
   $$->sons = $3;
 }
 |
 OPEN_PAREN  NOT_TOK  adl_goal_description  CLOSE_PAREN
-{ 
+{
   $$ = new_PlNode(NOT);
   $$->sons = $3;
 }
 |
 OPEN_PAREN  IMPLY_TOK  adl_goal_description  adl_goal_description  CLOSE_PAREN
-{ 
+{
   PlNode *np = new_PlNode(NOT);
   np->sons = $3;
   np->next = $4;
@@ -588,10 +582,10 @@ OPEN_PAREN  IMPLY_TOK  adl_goal_description  adl_goal_description  CLOSE_PAREN
   $$->sons = np;
 }
 |
-OPEN_PAREN  EXISTS_TOK 
-OPEN_PAREN  typed_list_variable  CLOSE_PAREN 
+OPEN_PAREN  EXISTS_TOK
+OPEN_PAREN  typed_list_variable  CLOSE_PAREN
 adl_goal_description  CLOSE_PAREN
-{ 
+{
 
   PlNode *pln;
 
@@ -603,10 +597,10 @@ adl_goal_description  CLOSE_PAREN
 
 }
 |
-OPEN_PAREN  FORALL_TOK 
-OPEN_PAREN  typed_list_variable  CLOSE_PAREN 
+OPEN_PAREN  FORALL_TOK
+OPEN_PAREN  typed_list_variable  CLOSE_PAREN
 adl_goal_description  CLOSE_PAREN
-{ 
+{
 
   PlNode *pln;
 
@@ -681,7 +675,7 @@ OPEN_PAREN DECREASE_TOK f_head f_exp CLOSE_PAREN
 }
 |
 literal_term
-{ 
+{
   if ( sis_negated ) {
     $$ = new_PlNode(NOT);
     $$->sons = new_PlNode(ATOM);
@@ -694,15 +688,15 @@ literal_term
 }
 |
 OPEN_PAREN  AND_TOK  adl_effect_star  CLOSE_PAREN
-{ 
+{
   $$ = new_PlNode(AND);
   $$->sons = $3;
 }
 |
-OPEN_PAREN  FORALL_TOK 
-OPEN_PAREN  typed_list_variable  CLOSE_PAREN 
+OPEN_PAREN  FORALL_TOK
+OPEN_PAREN  typed_list_variable  CLOSE_PAREN
 adl_effect  CLOSE_PAREN
-{ 
+{
 
   PlNode *pln;
 
@@ -722,7 +716,7 @@ OPEN_PAREN  WHEN_TOK  adl_goal_description  adl_effect  CLOSE_PAREN
    *  [sons]
    *   /  \
    * [p]  [q]
-   * That means, the first son is p, and the second one is q. 
+   * That means, the first son is p, and the second one is q.
    */
   $$ = new_PlNode(WHEN);
   $3->next = $4;
@@ -733,8 +727,8 @@ OPEN_PAREN  WHEN_TOK  adl_goal_description  adl_effect  CLOSE_PAREN
 
 /**********************************************************************/
 adl_effect_star:
-{ 
-  $$ = NULL; 
+{
+  $$ = NULL;
 }
 |
 adl_effect  adl_effect_star
@@ -763,7 +757,7 @@ OPEN_PAREN NAME term_star CLOSE_PAREN
 
 f_exp:
 NUM
-{ 
+{
   $$ = new_ParseExpNode( NUMBER );
   $$->atom = new_TokenList();
   $$->atom->item = new_Token( strlen($1)+1 );
@@ -814,7 +808,7 @@ OPEN_PAREN DI_TOK f_exp f_exp CLOSE_PAREN
 /**********************************************************************/
 literal_term:
 OPEN_PAREN  NOT_TOK  atomic_formula_term  CLOSE_PAREN
-{ 
+{
   $$ = $3;
   sis_negated = TRUE;
 }
@@ -829,7 +823,7 @@ atomic_formula_term
 /**********************************************************************/
 atomic_formula_term:
 OPEN_PAREN  predicate  term_star  CLOSE_PAREN
-{ 
+{
   $$ = new_TokenList();
   $$->item = $2;
   $$->next = $3;
@@ -862,13 +856,13 @@ term  term_star
 /**********************************************************************/
 term:
 NAME
-{ 
+{
   $$ = new_Token( strlen($1)+1 );
   strcpy( $$, $1 );
 }
 |
 VARIABLE
-{ 
+{
   $$ = new_Token( strlen($1)+1 );
   strcpy( $$, $1 );
 }
@@ -897,7 +891,7 @@ NAME  name_plus
 /**********************************************************************/
 predicate:
 NAME
-{ 
+{
   $$ = new_Token( strlen($1)+1 );
   strcpy( $$, $1 );
 }
@@ -910,7 +904,7 @@ typed_list_name:     /* returns TypedList */
 { $$ = NULL; }
 |
 NAME  EITHER_TOK  name_plus  CLOSE_PAREN  typed_list_name
-{ 
+{
 
   $$ = new_TypedList();
   $$->name = new_Token( strlen($1)+1 );
@@ -953,7 +947,7 @@ typed_list_variable:     /* returns TypedList */
 { $$ = NULL; }
 |
 VARIABLE  EITHER_TOK  name_plus  CLOSE_PAREN  typed_list_variable
-{ 
+{
   $$ = new_TypedList();
   $$->name = new_Token( strlen($1)+1 );
   strcpy( $$->name, $1 );
@@ -998,28 +992,10 @@ VARIABLE  typed_list_variable        /* a list element (gets type from next one)
  * Functions
  **********************************************************************/
 
-/* 
+/*
  * call	bison -pops -bscan-ops scan-ops.y
  */
 
-void opserr( int errno, char *par )
-
-{
-
-/*   sact_err = errno; */
-
-/*   if ( sact_err_par ) { */
-/*     free(sact_err_par); */
-/*   } */
-/*   if ( par ) { */
-/*     sact_err_par = new_Token(strlen(par)+1); */
-/*     strcpy(sact_err_par, par); */
-/*   } else { */
-/*     sact_err_par = NULL; */
-/*   } */
-
-}
-  
 extern char *ops_pddltext;
 
 int yyerror( char *msg )
@@ -1027,7 +1003,7 @@ int yyerror( char *msg )
 {
 
   fflush(stdout);
-  fprintf(stderr, "\n%s: syntax error in line %d, '%s':\n", 
+  fprintf(stderr, "\n%s: syntax error in line %d, '%s':\n",
 	  gact_filename, lineno, ops_pddltext);
 
   if ( NULL != sact_err_par ) {
@@ -1049,7 +1025,7 @@ void load_ops_file( char *filename )
   FILE * fp;/* pointer to input files */
   char tmp[MAX_LENGTH] = "";
 
-  /* open operator file 
+  /* open operator file
    */
   if( ( fp = fopen( filename, "r" ) ) == NULL ) {
     sprintf(tmp, "\nff: can't find operator file: %s\n\n", filename );
@@ -1058,7 +1034,7 @@ void load_ops_file( char *filename )
   }
 
   gact_filename = filename;
-  lineno = 1; 
+  lineno = 1;
   ops_pddlin = fp;
 
   yyparse();

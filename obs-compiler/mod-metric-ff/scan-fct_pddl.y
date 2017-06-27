@@ -8,16 +8,16 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  *********************************************************************/
 
 
@@ -29,7 +29,7 @@
 #define YYMAXDEPTH 1000000
 
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
 #include "ff.h"
 #include "memory.h"
 #include "parse.h"
@@ -49,7 +49,7 @@
 #define DOMEXTNAME_EXPECTED        9
 #define TYPEDEF_EXPECTED          10
 #define CONSTLIST_EXPECTED        11
-#define PREDDEF_EXPECTED          12 
+#define PREDDEF_EXPECTED          12
 #define NAME_EXPECTED             13
 #define VARIABLE_EXPECTED         14
 #define ACTIONFUNCTOR_EXPECTED    15
@@ -87,7 +87,7 @@ static char * serrmsg[] = {
   "atomic formula expected",
   "effect definition expected",
   "negated atomic formula expected",
-  "requirement %s not supported by this IPP version",  
+  "requirement %s not supported by this IPP version",
   "'situation' expected",
   "situation name expected",
   "':domain' expected",
@@ -97,9 +97,6 @@ static char * serrmsg[] = {
   "first order logic expression expected",
   NULL
 };
-
-
-/* void fcterr( int errno, char *par ); */
 
 
 static int sact_err;
@@ -132,7 +129,6 @@ static Bool sis_negated = FALSE;
 %type <pPlNode> adl_goal_description_star
 %type <pPlNode> init_el_plus
 %type <pPlNode> init_el
-%type <pPlNode> literal_name_plus
 %type <pPlNode> literal_name
 %type <pTokenList> literal_term
 %type <pTokenList> atomic_formula_term
@@ -188,13 +184,13 @@ problem_definition  file
 
 
 /**********************************************************************/
-problem_definition : 
-OPEN_PAREN DEFINE_TOK         
-{ 
-  fcterr( PROBNAME_EXPECTED, NULL ); 
+problem_definition :
+OPEN_PAREN DEFINE_TOK
+{
+
 }
-problem_name  problem_defs  CLOSE_PAREN                 
-{  
+problem_name  problem_defs  CLOSE_PAREN
+{
   gproblem_name = $4;
   if ( gcmd_line.display_info >= 1 ) {
     printf("\nproblem '%s' defined\n", gproblem_name);
@@ -205,8 +201,8 @@ problem_name  problem_defs  CLOSE_PAREN
 
 /**********************************************************************/
 problem_name :
-OPEN_PAREN  PROBLEM_TOK  NAME  CLOSE_PAREN        
-{ 
+OPEN_PAREN  PROBLEM_TOK  NAME  CLOSE_PAREN
+{
   $$ = new_Token( strlen($3)+1 );
   strcpy($$, $3);
 }
@@ -216,9 +212,9 @@ OPEN_PAREN  PROBLEM_TOK  NAME  CLOSE_PAREN
 /**********************************************************************/
 base_domain_name :
 OPEN_PAREN  BDOMAIN_TOK  NAME  CLOSE_PAREN
-{ 
+{
   if ( SAME != strcmp($3, gdomain_name) ) {
-    fcterr( BADDOMAIN, NULL );
+
     yyerror();
   }
 }
@@ -244,7 +240,7 @@ metric_def problem_defs
 /**********************************************************************/
 objects_def:
 OPEN_PAREN  OBJECTS_TOK  typed_list_name  CLOSE_PAREN
-{ 
+{
   gparse_objects = $3;
 }
 ;
@@ -254,7 +250,7 @@ OPEN_PAREN  OBJECTS_TOK  typed_list_name  CLOSE_PAREN
 init_def:
 OPEN_PAREN  INIT_TOK
 {
-  fcterr( INIFACTS, NULL ); 
+
 }
 init_el_plus  CLOSE_PAREN
 {
@@ -267,8 +263,8 @@ init_el_plus  CLOSE_PAREN
 /**********************************************************************/
 goal_def:
 OPEN_PAREN  GOAL_TOK
-{ 
-  fcterr( GOALDEF, NULL ); 
+{
+
 }
 adl_goal_description  CLOSE_PAREN
 {
@@ -304,7 +300,7 @@ OPEN_PAREN  METRIC_TOK  NAME ground_f_exp CLOSE_PAREN
 
 /**********************************************************************
  * Goal description providing full ADL.
- * RETURNS a tree with the connectives in the nodes and the atomic 
+ * RETURNS a tree with the connectives in the nodes and the atomic
  * predicates in the leafs.
  **********************************************************************/
 adl_goal_description:
@@ -349,7 +345,7 @@ OPEN_PAREN GE_TOK f_exp f_exp CLOSE_PAREN
 }
 |
 literal_term
-{ 
+{
   if ( sis_negated ) {
     $$ = new_PlNode(NOT);
     $$->sons = new_PlNode(ATOM);
@@ -362,25 +358,25 @@ literal_term
 }
 |
 OPEN_PAREN  AND_TOK  adl_goal_description_star  CLOSE_PAREN
-{ 
+{
   $$ = new_PlNode(AND);
   $$->sons = $3;
 }
 |
 OPEN_PAREN  OR_TOK  adl_goal_description_star  CLOSE_PAREN
-{ 
+{
   $$ = new_PlNode(OR);
   $$->sons = $3;
 }
 |
 OPEN_PAREN  NOT_TOK  adl_goal_description  CLOSE_PAREN
-{ 
+{
   $$ = new_PlNode(NOT);
   $$->sons = $3;
 }
 |
 OPEN_PAREN  IMPLY_TOK  adl_goal_description  adl_goal_description  CLOSE_PAREN
-{ 
+{
   PlNode *np = new_PlNode(NOT);
   np->sons = $3;
   np->next = $4;
@@ -389,10 +385,10 @@ OPEN_PAREN  IMPLY_TOK  adl_goal_description  adl_goal_description  CLOSE_PAREN
   $$->sons = np;
 }
 |
-OPEN_PAREN  EXISTS_TOK 
-OPEN_PAREN  typed_list_variable  CLOSE_PAREN 
+OPEN_PAREN  EXISTS_TOK
+OPEN_PAREN  typed_list_variable  CLOSE_PAREN
 adl_goal_description  CLOSE_PAREN
-{ 
+{
 
   PlNode *pln;
 
@@ -404,10 +400,10 @@ adl_goal_description  CLOSE_PAREN
 
 }
 |
-OPEN_PAREN  FORALL_TOK 
-OPEN_PAREN  typed_list_variable  CLOSE_PAREN 
+OPEN_PAREN  FORALL_TOK
+OPEN_PAREN  typed_list_variable  CLOSE_PAREN
 adl_goal_description  CLOSE_PAREN
-{ 
+{
 
   PlNode *pln;
 
@@ -516,7 +512,7 @@ OPEN_PAREN EQ_TOK NAME NUM CLOSE_PAREN
  **********************************************************************/
 f_exp:
 NUM
-{ 
+{
   $$ = new_ParseExpNode( NUMBER );
   $$->atom = new_TokenList();
   $$->atom->item = new_Token( strlen($1)+1 );
@@ -571,7 +567,7 @@ OPEN_PAREN DI_TOK f_exp f_exp CLOSE_PAREN
 /**********************************************************************/
 ground_f_exp:
 NUM
-{ 
+{
   $$ = new_ParseExpNode( NUMBER );
   $$->atom = new_TokenList();
   $$->atom->item = new_Token( strlen($1)+1 );
@@ -626,7 +622,7 @@ OPEN_PAREN DI_TOK ground_f_exp ground_f_exp CLOSE_PAREN
 /**********************************************************************/
 literal_term:
 OPEN_PAREN  NOT_TOK  atomic_formula_term  CLOSE_PAREN
-{ 
+{
   $$ = $3;
   sis_negated = TRUE;
 }
@@ -641,7 +637,7 @@ atomic_formula_term
 /**********************************************************************/
 atomic_formula_term:
 OPEN_PAREN  predicate  term_star  CLOSE_PAREN
-{ 
+{
   $$ = new_TokenList();
   $$->item = $2;
   $$->next = $3;
@@ -676,13 +672,13 @@ term  term_star
 /**********************************************************************/
 term:
 NAME
-{ 
+{
   $$ = new_Token(strlen($1) + 1);
   strcpy($$, $1);
 }
 |
 VARIABLE
-{ 
+{
   $$ = new_Token(strlen($1) + 1);
   strcpy($$, $1);
 }
@@ -714,7 +710,7 @@ typed_list_name:     /* returns TypedList */
 { $$ = NULL; }
 |
 NAME  EITHER_TOK  name_plus  CLOSE_PAREN  typed_list_name
-{ 
+{
   $$ = new_TypedList();
   $$->name = new_Token( strlen($1)+1 );
   strcpy( $$->name, $1 );
@@ -756,7 +752,7 @@ typed_list_variable:     /* returns TypedList */
 { $$ = NULL; }
 |
 VARIABLE  EITHER_TOK  name_plus  CLOSE_PAREN  typed_list_variable
-{ 
+{
   $$ = new_TypedList();
   $$->name = new_Token( strlen($1)+1 );
   strcpy( $$->name, $1 );
@@ -797,7 +793,7 @@ VARIABLE  typed_list_variable        /* a list element (gets type from next one)
 /**********************************************************************/
 predicate:
 NAME
-{ 
+{
   $$ = new_Token(strlen($1) + 1);
   strcpy($$, $1);
 }
@@ -805,24 +801,9 @@ NAME
 
 
 /**********************************************************************/
-literal_name_plus:
-literal_name
-{
-  $$ = $1;
-}
-|
-literal_name literal_name_plus
-{
-   $$ = $1;
-   $$->next = $2;
-}
-;
-
- 
-/**********************************************************************/
 literal_name:
 OPEN_PAREN  NOT_TOK  atomic_formula_name  CLOSE_PAREN
-{ 
+{
   PlNode *tmp;
 
   tmp = new_PlNode(ATOM);
@@ -842,7 +823,7 @@ atomic_formula_name
 /**********************************************************************/
 atomic_formula_name:
 OPEN_PAREN  predicate  name_star  CLOSE_PAREN
-{ 
+{
   $$ = new_TokenList();
   $$->item = $2;
   $$->next = $3;
@@ -876,24 +857,9 @@ NAME  name_star
  **********************************************************************/
 
 
-/* 
+/*
  * call	bison -pfct -bscan-fct scan-fct.y
  */
-void fcterr( int errno, char *par ) {
-
-/*   sact_err = errno; */
-
-/*   if ( sact_err_par ) { */
-/*     free( sact_err_par ); */
-/*   } */
-/*   if ( par ) { */
-/*     sact_err_par = new_Token( strlen(par)+1 ); */
-/*     strcpy( sact_err_par, par); */
-/*   } else { */
-/*     sact_err_par = NULL; */
-/*   } */
-
-}
 
 extern char *fct_pddltext;
 
@@ -901,7 +867,7 @@ int yyerror( char *msg )
 
 {
   fflush( stdout );
-  fprintf(stderr,"\n%s: syntax error in line %d, '%s':\n", 
+  fprintf(stderr,"\n%s: syntax error in line %d, '%s':\n",
 	  gact_filename, lineno, fct_pddltext );
 
   if ( sact_err_par ) {
@@ -916,14 +882,14 @@ int yyerror( char *msg )
 
 extern FILE *fct_pddlin;
 
-void load_fct_file( char *filename ) 
+void load_fct_file( char *filename )
 
 {
 
   FILE *fp;/* pointer to input files */
   char tmp[MAX_LENGTH] = "";
 
-  /* open fact file 
+  /* open fact file
    */
   if( ( fp = fopen( filename, "r" ) ) == NULL ) {
     sprintf(tmp, "\nff: can't find fact file: %s\n\n", filename );
@@ -932,7 +898,7 @@ void load_fct_file( char *filename )
   }
 
   gact_filename = filename;
-  lineno = 1; 
+  lineno = 1;
   fct_pddlin = fp;
 
   yyparse();
@@ -940,4 +906,3 @@ void load_fct_file( char *filename )
   fclose( fp );/* and close file again */
 
 }
-
