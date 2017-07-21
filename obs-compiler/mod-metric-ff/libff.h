@@ -53,15 +53,16 @@ inline std::string	get_op_name( int index )
 {
       	int i;
 	Action *a = gop_conn[index].action;
-	std::string str;	
+	std::string str;
 
-	if ( !a->norm_operator && !a->pseudo_action ) 
+	if ( !a->norm_operator && !a->pseudo_action )
 	{
 		return std::string( "(REACH-GOAL)" );
 	}
+	
 	str += "(";
  	str += a->name;
-	for ( i = 0; i < a->num_name_vars; i++ ) 
+	for ( i = 0; i < a->num_name_vars; i++ )
 	{
 		str += " ";
 		str += gconstants[a->name_inst_table[i]];
@@ -75,22 +76,22 @@ inline std::string	get_ft_name( int index )
 	Fact* f = &(grelevant_facts[index]);
 	int j;
 
-	if ( f->predicate == -3 ) 
+	if ( f->predicate == -3 )
 	{
 		return std::string( "GOAL-REACHED" );
 	}
 
-	if ( f->predicate == -1 ) 
+	if ( f->predicate == -1 )
 	{
 		std::string str( "(=" );
-		for ( j=0; j<2; j++ ) 
+		for ( j=0; j<2; j++ )
 		{
 			str += " ";
-			if ( f->args[j] >= 0 ) 
+			if ( f->args[j] >= 0 )
 			{
 				str += gconstants[(f->args)[j]];
-			} 
-			else 
+			}
+			else
 			{
 				str += "x";
 				str += DECODE_VAR( f->args[j] );
@@ -100,17 +101,17 @@ inline std::string	get_ft_name( int index )
 		return str;
 	}
 
-	if ( f->predicate == -2 ) 
+	if ( f->predicate == -2 )
 	{
-		std::string str( "(!=" ); 
-		for ( j=0; j<2; j++ ) 
+		std::string str( "(!=" );
+		for ( j=0; j<2; j++ )
 		{
 			str += " ";
-			if ( f->args[j] >= 0 ) 
+			if ( f->args[j] >= 0 )
 			{
 				str += gconstants[(f->args)[j]];
-			} 
-			else 
+			}
+			else
 			{
 				str += "x";
 				str += DECODE_VAR( f->args[j] );
@@ -119,23 +120,23 @@ inline std::string	get_ft_name( int index )
 		str += ")";
 		return str;
 	}
-    
+
 	std::string str( "(" );
 	str += gpredicates[f->predicate];
-	for ( j=0; j<garity[f->predicate]; j++ ) 
+	for ( j=0; j<garity[f->predicate]; j++ )
 	{
 		str += " ";
-		if ( f->args[j] >= 0 ) 
+		if ( f->args[j] >= 0 )
 		{
 			str += gconstants[(f->args)[j]];
-		} 
-		else 
+		}
+		else
 		{
 			str += "x";
 			str += DECODE_VAR( f->args[j] );
 		}
 	}
-	str += ")";	
+	str += ")";
 	return str;
 }
 
