@@ -24,7 +24,7 @@ void STRIPS_Writer::make_predicate_strings()
 		std::cout << clean_ft_name << " -> ";
 		m_pred_names.push_back( replace( clean_ft_name, ' ', '_' ) );
 		std::cout << m_pred_names.back() << std::endl;
-	}	
+	}
 }
 
 void STRIPS_Writer::make_action_strings()
@@ -38,7 +38,7 @@ void STRIPS_Writer::make_action_strings()
 		PDDL::Operator* oi = task.useful_ops()[op];
 		std::string clean_op_name = strip( task.str_tab().get_token( oi->code() ) );
 		m_op_names.push_back( replace( clean_op_name, ' ', '_' ) );
-	}	
+	}
 }
 
 void STRIPS_Writer::write()
@@ -60,7 +60,7 @@ void STRIPS_Writer::write_domain_definition()
 
 	std::stringstream buffer;
 	buffer << "grounded-" << task.domain_name();
-	
+
 	m_domain_stream << "(define" << std::endl;
 
 	m_domain_stream << "\t(domain " << buffer.str() << ")" << std::endl;
@@ -69,7 +69,7 @@ void STRIPS_Writer::write_domain_definition()
 	write_predicates_definitions();
 	write_functions();
 	write_actions_definitions();
-	
+
 	m_domain_stream << std::endl << ")" << std::endl;
 
 	m_domain_stream.close();
@@ -86,7 +86,7 @@ void STRIPS_Writer::write_predicates_definitions()
 	PDDL::Task& task = PDDL::Task::instance();
 
 	for ( unsigned f = 1; f < task.fluents().size(); f++ )
-		m_domain_stream << "\t\t( " << m_pred_names[f] << " )" << std::endl;
+		m_domain_stream << "\t\t(" << m_pred_names[f] << ")" << std::endl;
 
 	m_domain_stream << "\t) " << std::endl;
 }
@@ -97,25 +97,25 @@ void STRIPS_Writer::write_actions_definitions()
 
 	for ( unsigned op = 2; op < task.useful_ops().size(); op++ )
 	{
-		PDDL::Operator* op_ptr = task.useful_ops()[op]; 
+		PDDL::Operator* op_ptr = task.useful_ops()[op];
 		m_domain_stream << "\t(:action " << m_op_names[op] << std::endl;
 		m_domain_stream << "\t\t:parameters ()" << std::endl;
 		// Write preconditions
 		m_domain_stream << "\t\t:precondition" << std::endl;
 		m_domain_stream << "\t\t(and" << std::endl;
 		for ( unsigned k = 0; k < op_ptr->prec_vec().size(); k++ )
-			m_domain_stream << "\t\t\t( " << m_pred_names[op_ptr->prec_vec()[k]] << " )" << std::endl;
+			m_domain_stream << "\t\t\t(" << m_pred_names[op_ptr->prec_vec()[k]] << ")" << std::endl;
 		m_domain_stream << "\t\t)" << std::endl;
-		
+
 		// Write effects
 		m_domain_stream << "\t\t:effect" << std::endl;
 		m_domain_stream << "\t\t(and" << std::endl;
-		// write cost		
+		// write cost
 		m_domain_stream << "\t\t\t(increase (total-cost) 1)" << std::endl;
 		for ( unsigned k = 0; k < op_ptr->add_vec().size(); k++ )
-			m_domain_stream << "\t\t\t( " << m_pred_names[op_ptr->add_vec()[k]] << " )" << std::endl;
+			m_domain_stream << "\t\t\t(" << m_pred_names[op_ptr->add_vec()[k]] << ")" << std::endl;
 		for ( unsigned k = 0; k < op_ptr->del_vec().size(); k++ )
-			m_domain_stream << "\t\t\t(not ( " << m_pred_names[op_ptr->del_vec()[k]] << " ))" << std::endl;		
+			m_domain_stream << "\t\t\t(not (" << m_pred_names[op_ptr->del_vec()[k]] << "))" << std::endl;
 
 		m_domain_stream << "\t\t)" << std::endl;
 		m_domain_stream << "\t)" << std::endl;
@@ -136,7 +136,7 @@ void STRIPS_Writer::write_problem_definition()
 	m_problem_stream.open( m_problem_outfile_name.c_str() );
 
 	std::cout << "Writing resulting STRIPS problem into " << m_problem_outfile_name << std::endl;
-	
+
 	std::stringstream buffer;
 	buffer << "grounded-" << task.problem_name();
 
@@ -161,15 +161,15 @@ void STRIPS_Writer::write_problem_definition()
 void STRIPS_Writer::write_init_definition()
 {
 	PDDL::Task& task = PDDL::Task::instance();
-	
+
 	m_problem_stream << "\t(:init" << std::endl;
 
 	PDDL::Operator* start_op = task.useful_ops()[task.start()];
 
-	m_problem_stream << "\t\t(= (total-cost) 0)" << std::endl;	
+	m_problem_stream << "\t\t(= (total-cost) 0)" << std::endl;
 
 	for ( unsigned k = 0; k < start_op->add_vec().size(); k++ )
-		m_problem_stream << "\t\t( " << m_pred_names[ start_op->add_vec()[k] ] << " )" << std::endl;
+		m_problem_stream << "\t\t(" << m_pred_names[ start_op->add_vec()[k] ] << ")" << std::endl;
 
 	m_problem_stream << "\t)" << std::endl;
 }
@@ -183,7 +183,7 @@ void STRIPS_Writer::write_goal_definition()
 	PDDL::Operator* end_op = task.useful_ops()[task.end()];
 
 	for ( unsigned k = 0; k < end_op->prec_vec().size(); k++ )
-		m_problem_stream << "\t\t\t( " << m_pred_names[ end_op->prec_vec()[k] ] << " )" << std::endl;
+		m_problem_stream << "\t\t\t(" << m_pred_names[ end_op->prec_vec()[k] ] << ")" << std::endl;
 
 	m_problem_stream << "\t\t)" << std::endl;
 	m_problem_stream << "\t)" << std::endl;
