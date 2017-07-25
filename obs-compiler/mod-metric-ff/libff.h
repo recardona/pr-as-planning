@@ -57,9 +57,11 @@ inline std::string	get_op_name( int index )
 
 	if ( !a->norm_operator && !a->pseudo_action )
 	{
-		return std::string( "(REACH-GOAL)" );
+		char numstr[21]; // enough to hold all numbers up to 64-bits
+		sprintf(numstr, "%d)", index);
+		return std::string( "(REACH-GOAL-") + numstr;
 	}
-	
+
 	str += "(";
  	str += a->name;
 	for ( i = 0; i < a->num_name_vars; i++ )
